@@ -67,11 +67,11 @@ for c in Crops:
     for a in Areas:
         y_vars[c][a] = {}
         for d in Days:
-            y_vars[c][a][d] = solver.NumVar(0,1,str('y_'+str(c)+'_'+str(a)+'_'+str(d)))
+            y_vars[c][a][d] = solver.IntVar(0,1,str('y_'+str(c)+'_'+str(a)+'_'+str(d)))
 
 cash = {}
 for d in Days:
-    cash[d] = solver.NumVar(lb=0, ub=Founds*100, name='d_'+str(d))
+    cash[d] = solver.IntVar(lb=0, ub=Founds*100, name='d_'+str(d))
 
 
 objective = solver.Objective()
@@ -100,6 +100,7 @@ for d in Days:
             for dc in Days:
                 if IsGrowing[c][dc][d]:
                     cta.SetCoefficient(y_vars[c][a][d], 1)
+solver.EnableOutput()
 solver.Solve()
 
 
