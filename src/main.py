@@ -91,7 +91,7 @@ for d in Days:
             ct.SetCoefficient(y_vars[c][a][d], -Price[c])
             for dc in Days:
                 if IsReap[c][dc][d]:
-                    ct.SetCoefficient(y_vars[c][a][d], BaseSellPrice[c])
+                    ct.SetCoefficient(y_vars[c][a][dc], BaseSellPrice[c])
 
     for a in Areas:
         cta = solver.Constraint("one_crop_a"+ str(a)+"d"+str(d))
@@ -111,4 +111,8 @@ for c in Crops:
                 print(y_vars[c][a][d].solution_value())
 for d in Days:
     print(cash[d].solution_value())
-    
+
+lp = solver.ExportModelAsLpFormat(False)
+
+with open("lp.lp", "w") as text_file:
+    text_file.write(lp)
