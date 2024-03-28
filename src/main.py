@@ -99,7 +99,7 @@ for d in Days:
         for c in Crops:
             for dc in Days:
                 if IsGrowing[c][dc][d]:
-                    cta.SetCoefficient(y_vars[c][a][d], 1)
+                    cta.SetCoefficient(y_vars[c][a][dc], 1)
 solver.EnableOutput()
 solver.Solve()
 
@@ -117,3 +117,16 @@ lp = solver.ExportModelAsLpFormat(False)
 
 with open("lp.lp", "w") as text_file:
     text_file.write(lp)
+
+output = {}
+output['gold'] = {}
+for c in Crops:
+    output[nameById[c]] = {}
+    for d in Days:
+        output['gold'][d] = cash[d].solution_value()
+        output[nameById[c]][d] = 0
+        for a in Areas:
+            if y_vars[c][a][d].solution_value() > 0:
+                 output[nameById[c]][d] += 1
+
+df_output = pd.DataFrame.from_dict(output)
