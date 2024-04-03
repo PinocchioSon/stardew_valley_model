@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 from ortools.linear_solver import pywraplp
 
@@ -29,11 +30,31 @@ def calcIsGrowing(Regrowth, ReapDays, Crops, Days):
             for dr in Days:
                 diffDays = dr - dc
                 IsGrowing[c][dc][dr] = diffDays < ReapDays[c] or Regrowth[c]
-                #if diffDays < ReapDays[c] or Regrowth[c]:
-                #    IsGrowing[c][dc][dr] = 1
-                #else:
-                #    IsGrowing[c][dc][dr] = 0
     return IsGrowing
+
+def calcPricePerDay(Crops, Days, Price, JojaPrice, SpecialPrice, SpecialDays, Season):
+    PricePerDay = {}
+    CanBeBough = {}
+    for crop in Crops:
+        PricePerDay[crop] = {}
+        CanBeBough[crop] = {}
+        if math.isnan(Price[crop]):
+            for day in Days:
+                PricePerDay[crop][day] = 0
+                CanBeBough[crop][day] = False
+            PricePerDay[crop][SpecialDays[crop]] = SpecialPrice[crop]
+            CanBeBough[crop][SpecialDays[crop]] = True
+            continue
+        for day in Days:
+            CanBeBough[crop][day] = True
+            if Season == "Primavera" and day == 13:
+                CanBeBough[crop][day] = False
+            if day % 7 == 3: # Pierre closed
+               PricePerDay[crop][day] =  JojaPrice[crop]
+            else:
+                PricePerDay[crop][day] =  Price[crop]
+    return PricePerDay, CanBeBough
+            
 
 #Read input
 inputData = pd.read_excel('stardew_valley_model/data/data.xlsx')
@@ -53,10 +74,15 @@ Regrowth = inputData["Recorrência"].map(lambda x: x == "Sim").to_dict()
 RegrowthDays = inputData["Tempo Recorrência"].to_dict() #float and string, need to cast later
 Founds = 2000 #TODO
 Price = inputData["Preço"].to_dict()
+JojaPrice = inputData["Preço Joja"].to_dict()
+SpecialPrice = inputData["Preço Especial"].to_dict()
 BaseSellPrice = inputData["Venda"].to_dict() 
+SpecialDays = inputData["Dias Especiais"].to_dict()
 FirstDay = Days[0]
 IsReap = calcIsReap(RegrowthDays, Regrowth, ReapDays, Crops, Days)
 IsGrowing = calcIsGrowing(Regrowth, ReapDays, Crops, Days)
+PricePerDay, CanBeBough = calcPricePerDay(Crops, Days, Price, JojaPrice, SpecialPrice, SpecialDays, "Primavera")
+
 
 
 solver = pywraplp.Solver.CreateSolver("SCIP")
