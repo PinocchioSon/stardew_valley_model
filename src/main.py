@@ -65,7 +65,7 @@ lastDay = 28 #TODO
 
 #Sets
 Crops = list(nameById.keys())
-Areas = list(range(0,45))  #TODO
+Areas = list(range(0,40))  #TODO
 Days = list(range(1,lastDay+1)) 
 
 #Parameters
@@ -120,7 +120,7 @@ for d in Days:
     ct.SetCoefficient(cash[d], -1)
     for c in Crops:
         for a in Areas:
-            ct.SetCoefficient(y_vars[c][a][d], -Price[c])
+            ct.SetCoefficient(y_vars[c][a][d], -PricePerDay[c][d])
             for dc in Days:
                 if IsReap[c][dc][d]:
                     ct.SetCoefficient(y_vars[c][a][dc], BaseSellPrice[c])
