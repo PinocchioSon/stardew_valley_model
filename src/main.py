@@ -57,7 +57,7 @@ def calcPricePerDay(Crops, Days, Price, JojaPrice, SpecialPrice, SpecialDays, Se
             
 
 #Read input
-inputData = pd.read_excel('stardew_valley_model/data/data.xlsx')
+inputData = pd.read_excel('data/data.xlsx')
 
 #Recovery Names
 nameById = inputData["Nome"].to_dict()
@@ -72,17 +72,20 @@ Days = list(range(1,lastDay+1))
 ReapDays = inputData["Tempo"].to_dict()
 Regrowth = inputData["Recorrência"].map(lambda x: x == "Sim").to_dict()
 RegrowthDays = inputData["Tempo Recorrência"].to_dict() #float and string, need to cast later
-Founds = 2000 #TODO
+Founds = 500 #TODO
 Price = inputData["Preço"].to_dict()
 JojaPrice = inputData["Preço Joja"].to_dict()
 SpecialPrice = inputData["Preço Especial"].to_dict()
 BaseSellPrice = inputData["Venda"].to_dict() 
 SpecialDays = inputData["Dias Especiais"].to_dict()
+FixedCrops = inputData["Fixo"].to_dict()
 FirstDay = Days[0]
 IsReap = calcIsReap(RegrowthDays, Regrowth, ReapDays, Crops, Days)
 IsGrowing = calcIsGrowing(Regrowth, ReapDays, Crops, Days)
 PricePerDay, CanBeBough = calcPricePerDay(Crops, Days, Price, JojaPrice, SpecialPrice, SpecialDays, "Primavera")
 
+#Increment founds to attend fixed start Crops
+Founds += sum([PricePerDay[x][FirstDay] * FixedCrops[x] for x in Crops])
 
 
 solver = pywraplp.Solver.CreateSolver("SCIP")
