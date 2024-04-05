@@ -96,7 +96,10 @@ for c in Crops:
     for a in Areas:
         y_vars[c][a] = {}
         for d in Days:
-            y_vars[c][a][d] = solver.IntVar(0,1,str('y_'+str(c)+'_'+str(a)+'_'+str(d)))
+            if CanBeBough[c][d]:
+                y_vars[c][a][d] = solver.IntVar(0,1,str('y_'+str(c)+'_'+str(a)+'_'+str(d)))
+            else:
+                y_vars[c][a][d] = solver.IntVar(0,0,str('y_'+str(c)+'_'+str(a)+'_'+str(d)))
 
 cash = {}
 for d in Days:
