@@ -14,7 +14,7 @@ def calcIsReap(RegrowthDays, Regrowth, ReapDays, Crops, Days):
                 elif diffDays == ReapDays[c]:
                     isReap[c][dc][dr] = True
                 else:
-                    if Regrowth[c] and diffDays - ReapDays[c] % RegrowthDays[c] == 0:
+                    if Regrowth[c] and (diffDays - ReapDays[c]) % RegrowthDays[c] == 0:
                         isReap[c][dc][dr] = True
                     else:
                         isReap[c][dc][dr] = False
@@ -36,7 +36,7 @@ def calcIsGrowing(Regrowth, ReapDays, Crops, Days):
     return IsGrowing
 
 #Read input
-inputData = pd.read_excel('data/data.xlsx')
+inputData = pd.read_excel('stardew_valley_model/data/data.xlsx')
 
 #Recovery Names
 nameById = inputData["Nome"].to_dict()
